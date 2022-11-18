@@ -1,8 +1,3 @@
-Short term
-1. Script to input meta file, Baugmardt . Output is a plot with beams, core, half mass radius overlaid and respective beams that make the cut within these radii.
-2. Follow up interesting candidates by getting neighbouring beams. Script to input beam number and output six closest neighbouring beams for refold.
-
-Long term
+1. Add plot of overlaying core, half mass radii on the beams themselves along with variable overlap factor (Take tips from Federico's code and metaxtractor)
+2. For follow up purposes, add a script that gives a set of neighbouring beams for a given beam and meta file. Also allow for finding closest beam from different meta file. 
 3. Candidate viewer which takes bestprof and meta file as input. Also flexible for bestprof inputs alone. 
-4. Retrain PICS with the classified candidates.
-   
