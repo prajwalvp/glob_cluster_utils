@@ -63,22 +63,33 @@ def get_reference_beam_coords(opts):
 
 def find_neighbours(opts):
 
-    ref_beam_coords = get_reference_beam_coords(opts)
+    if opts.ref_coords=='unset':
+        ref_beam_coords = get_reference_beam_coords(opts)
+    else:
+        ref_ra = opts.ref_coords.split(' ')[0]
+        ref_dec = opts.ref_coords.split(' ')[1]
+        ref_beam_coords = SkyCoord(frame='icrs', ra=ref_ra, dec=ref_dec, unit=(u.hour, u.deg)) 
+
     coherent_beam_coords = get_coherent_beam_coords(opts.meta_path)
  
     all_seps = ref_beam_coords.separation(coherent_beam_coords)
     all_beams_sorted = np.argsort(all_seps)
-    neighbour_beam_list = all_beams_sorted[1:min(11, len(all_beams_sorted))]
+    if opts.ref_coords == 'unset':
+        neighbour_beam_list = all_beams_sorted[1:min(11, len(all_beams_sorted))]
+    else:
+        neighbour_beam_list = all_beams_sorted[0:min(10, len(all_beams_sorted))]
     print('Neighbouring beams are..')
     for i, beam_num in enumerate(neighbour_beam_list):
-        print('cfbf00{:03d}, {}'.format(beam_num, sorted(all_seps)[i+1].deg))
-
-
+        if opts.ref_coords == 'unset': 
+            print('cfbf00{:03d}, {}'.format(beam_num, sorted(all_seps)[i+1].deg))
+        else:
+            print('cfbf00{:03d}, {}'.format(beam_num, sorted(all_seps)[i].deg))
+              
     if os.path.exists(opts.meta_path2):
         coherent_beam_coords2 = get_coherent_beam_coords(opts.meta_path2)
         all_seps2 = ref_beam_coords.separation(coherent_beam_coords2)
         all_beams_sorted2 = np.argsort(all_seps2)
-        neighbour_beam_list = all_beams_sorted2[0:min(11, len(all_beams_sorted))]
+        neighbour_beam_list = all_beams_sorted2[0:min(10, len(all_beams_sorted))]
         print('Neighbouring beams from different epoch ({}) are..'.format(opts.meta_path2))
         for i, beam_num in enumerate(neighbour_beam_list):
             print('cfbf00{:03d}, {}'.format(beam_num, sorted(all_seps2)[i].deg))
@@ -92,7 +103,8 @@ if __name__=='__main__':
     parser = optparse.OptionParser()
     parser.add_option('--meta_path',type=str, help= 'Path to meta file',dest='meta_path')
     parser.add_option('--meta_path2',type=str, help= 'Path to another epoch meta file',dest='meta_path2', default='None')
-    parser.add_option('--reference_beam',type=str, help= 'Reference beam number',dest='ref_beam', default='cfbf00000')
+    parser.add_option('--reference_beam',type=str, help= 'Reference beam name (cfbfxxxxx)',dest='ref_beam', default='cfbf00000')
+    parser.add_option('--reference_coord',type=str, help= 'Reference coordinates',dest='ref_coords',default='unset')
 
     opts, args = parser.parse_args()
 
