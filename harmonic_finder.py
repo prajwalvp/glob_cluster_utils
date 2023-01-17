@@ -25,7 +25,5 @@ if __name__ == "__main__":
 
     for par in sorted(glob.glob(sys.argv[1]+'/*.par')):
         psr_name, psr_dm, psr_f0 = get_psr_details(par)   
-        #if float(psr_dm) < 237.28 or float(psr_dm) > 239.28:
-        #    continue 
         print("{} {}  {} {}".format(psr_name, psr_dm, spin_freq/float(psr_f0), float(psr_f0)/spin_freq))
 
