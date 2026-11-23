@@ -61,16 +61,18 @@ def derive_from_user(opts):
     print(opts.meta_path)
 
 def derive_values(opts, data):    
-    D = float(data[data['Cluster'] == opts.gc_name]['R_Sun'])
-    r_c = float(data[data['Cluster'] == opts.gc_name]['rc'])
-    r_hl = float(data[data['Cluster'] == opts.gc_name]['rh,l'])
-    r_hm = float(data[data['Cluster'] == opts.gc_name]['rh,m'])
-    r_t = float(data[data['Cluster'] == opts.gc_name]['rt'])
+    #D = float(data[data['Cluster'] == opts.gc_name]['R_Sun'])
+    D = float(data.loc[data['Cluster'] == opts.gc_name, 'R_Sun'].iloc[0])
+    r_c = float(data[data['Cluster'] == opts.gc_name]['rc'].iloc[0])
+    r_hl = float(data[data['Cluster'] == opts.gc_name]['rh,l'].iloc[0])
+    r_hm = float(data[data['Cluster'] == opts.gc_name]['rh,m'].iloc[0])
+    r_t = float(data[data['Cluster'] == opts.gc_name]['rt'].iloc[0])
 
     r_c_deg = (180/np.pi)*(r_c/(D*1000))
     r_hl_deg = (180/np.pi)*(r_hl/(D*1000))
     r_hm_deg = (180/np.pi)*(r_hm/(D*1000))
     r_t_deg = (180/np.pi)*(r_t/(D*1000))
+
 
 
     beam_coords = get_coherent_beam_coords(opts.meta_path)
@@ -80,6 +82,10 @@ def derive_values(opts, data):
     r_hl_beams = []
     r_hm_beams = []
     r_t_beams = []
+
+    print("Core radius in deg.: {}".format(r_c_deg))
+    print("Half-light radius in deg. {}".format(r_hl_deg))
+    print("Half-mass radius in deg. {}".format(r_hm_deg))
 
     for i, beam_coord in enumerate(beam_coords):
         d2d = boresight_coords.separation(beam_coord)
@@ -93,10 +99,19 @@ def derive_values(opts, data):
             r_t_beams.append(i)
   
     
-    core_radius_beams = ["cfbf00{:03d}".format(i) for i in rc_beams]      
-    hm_radius_beams = ["cfbf00{:03d}".format(i) for i in r_hm_beams]      
-    hl_radius_beams = ["cfbf00{:03d}".format(i) for i in r_hl_beams]      
-    tidal_radius_beams = ["cfbf00{:03d}".format(i) for i in r_t_beams]      
+    #core_radius_beams = ["cfbf00{:03d}".format(i) for i in rc_beams]      
+    #hm_radius_beams = ["cfbf00{:03d}".format(i) for i in r_hm_beams]      
+    #hl_radius_beams = ["cfbf00{:03d}".format(i) for i in r_hl_beams]      
+    #tidal_radius_beams = ["cfbf00{:03d}".format(i) for i in r_t_beams]      
+
+    #core_radius_beams = ["cfbf00{:03d}".format(i) for i in rc_beams]      
+    #hm_radius_beams = ["cfbf00{:03d}".format(i) for i in r_hm_beams]      
+    #hl_radius_beams = ["cfbf00{:03d}".format(i) for i in r_hl_beams]      
+    #tidal_radius_beams = ["cfbf00{:03d}".format(i) for i in r_t_beams]      
+    core_radius_beams = ["{:03d}".format(i) for i in rc_beams]      
+    hm_radius_beams = ["{:03d}".format(i) for i in r_hm_beams]      
+    hl_radius_beams = ["{:03d}".format(i) for i in r_hl_beams]      
+    tidal_radius_beams = ["{:03d}".format(i) for i in r_t_beams]      
 
 
     print("Beams within the core radius:{}".format(",".join(map(str, core_radius_beams))))   
@@ -112,6 +127,7 @@ def derive_values(opts, data):
                 user_beams.append(i)
          
 
+        #user_radius_beams = ["cfbf00{:03d}".format(i) for i in user_beams]      
         user_radius_beams = ["cfbf00{:03d}".format(i) for i in user_beams]      
         print("Beams within the user specified radius:{}".format(",".join(map(str, user_radius_beams))))   
 
@@ -126,7 +142,7 @@ if __name__=='__main__':
 
     
     # Read in the file
-    data = pd.read_csv('glob_cluster_properties_HB.txt', sep='\s+', skiprows=[1]) 
+    data = pd.read_csv('glob_cluster_properties_HB.txt', sep='\\s+', skiprows=[1]) 
 
 
     derive_values(opts, data)
